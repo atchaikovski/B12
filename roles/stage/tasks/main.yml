@@ -1,0 +1,10 @@
+---
+
+- name: Get the shell to run a 'docker ps' command
+  shell: docker ps
+  remote_user: jenkins
+  register: docker_command
+
+- name: what is output of 'docker ps'
+  ansible.builtin.debug:
+    msg: "{{ docker_command.stdout }}"

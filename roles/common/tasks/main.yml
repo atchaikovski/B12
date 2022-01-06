@@ -5,6 +5,15 @@
     name: "*"
     state: latest
 
+- name: update hosts
+  lineinfile:
+    path: "/etc/hosts"
+    regexp: ".*\t{{ hostvars[item]['ansible_hostname']}}\t{{ hostvars[item]['ansible_hostname']}}"
+    line: "{{ hostvars[item]['ansible_ssh_host'] }}\t{{ hostvars[item]['ansible_hostname']}}\t{{ hostvars[item]['ansible_hostname']}}"
+    state: present
+    backup: yes
+  with_items: "{{ ansible_play_batch }}"       
+
 - name: remove firewalld
   package:
     name: firewalld
@@ -15,4 +24,51 @@
     name: java-11-openjdk-devel
     state: present
 
-# add docker ?
+- name: Ensure group "docker" exists
+  ansible.builtin.group:
+    name: docker
+    state: present
+
+- name: Add the user 'jenkins' with a bash shell
+  ansible.builtin.user:
+    name: jenkins
+    shell: /bin/bash
+    groups: wheel,docker
+    append: yes
+
+- name: Add user "jenkins" to sudo
+  lineinfile:
+    path: /etc/sudoers.d/jenkins
+    line: 'jenkins ALL=(ALL) NOPASSWD: ALL'
+    state: present
+    mode: 0440
+    create: yes
+    validate: 'visudo -cf %s'
+
+- name: create .ssh directory
+  file: 
+    path: /home/jenkins/.ssh
+    state: directory
+    owner: jenkins
+    group: jenkins
+    mode: 0700
+
+- name: deploy authorized_keys
+  authorized_key: 
+    user: jenkins
+    state: present
+    key: "{{ lookup('file', '~/.ssh/id_rsa.pub') }}"
+    path: /home/jenkins/.ssh/authorized_keys
+    manage_dir: False
+
+- name: Replace a line in sshd_config
+  ansible.builtin.lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: '^PasswordAuthentication yes'
+    line: 'PasswordAuthentication no'
+    state: present
+
+- name: restart sshd
+  systemd:
+    name: sshd
+    state: restarted

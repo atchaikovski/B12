@@ -1,4 +1,17 @@
 ---
+
+- name: Create docker group
+  group:
+    name: docker
+    state: present
+    system: yes
+
+- name: Add user to docker group
+  user:
+    name: devops
+    groups: docker
+    append: yes
+
 - name: Install Docker container engine
   include_tasks: pkg.yml
 

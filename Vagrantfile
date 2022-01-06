@@ -20,6 +20,7 @@ Vagrant.configure(2) do |config|
     vsphere.insecure = true
   end
 
+# jenkins master host  
   config.vm.define "jenkins" do |j|
     j.vm.box = "dummy.box"
     j.vm.box_url = "dummy.box"
@@ -32,31 +33,33 @@ Vagrant.configure(2) do |config|
     end
   end
 
+# production host
   config.vm.define "prod" do |prod|
     prod.vm.box = "dummy.box"
     prod.vm.box_url = "dummy.box"
     prod.vm.network "private_network", ip: "192.168.0.37"
-    prod.vm.hostname = "prod"
+    prod.vm.hostname = "production"
     prod.vm.provision "ansible" do |ansible|
         ansible.limit = "all"
-        ansible.playbook = "ci.yml"
+        ansible.playbook = "prod.yml"
         ansible.inventory_path = "./hosts"
     end
   end
 
+# staging host
   config.vm.define "stage" do |st|
     st.vm.box = "dummy.box"
     st.vm.box_url = "dummy.box"
     st.vm.network "private_network", ip: "192.168.0.38"
-    st.vm.hostname = "stage"
+    st.vm.hostname = "staging"
     st.vm.provision "ansible" do |ansible|
         ansible.limit = "all"
-        ansible.playbook = "ci.yml"
+        ansible.playbook = "staging.yml"
         ansible.inventory_path = "./hosts"
     end
   end
 
-
+# N jenkins agents hosts
   (1..N).each do |i|
     config.vm.define "runner#{i}" do |jr|
       jr.vm.box = "dummy.box"
@@ -70,6 +73,5 @@ Vagrant.configure(2) do |config|
       end
     end
   end
-
 
 end

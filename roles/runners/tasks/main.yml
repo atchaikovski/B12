@@ -1,54 +1,17 @@
 ---
 
-- name: Add the user 'jenkins' with a bash shell
-  ansible.builtin.user:
-    name: jenkins
-    shell: /bin/bash
-    groups: wheel
-    append: yes
+- name: Wait for jenkins master
+  wait_for:
+    host: "{{ groups['ci'][0] }}"
+    port: 8080
+    sleep: 10     # check every 10 sec
+    timeout: 300  # exit after 300 sec
 
-- name: create .ssh directory
-  file: 
-    path: /home/jenkins/.ssh
-    state: directory
-    owner: jenkins
-    group: jenkins
-    mode: 0700
-
-- name: deploy authorized_keys
-  authorized_key: 
-    user: jenkins
-    state: present
-    key: "{{ lookup('file', '~/.ssh/id_rsa.pub') }}"
-    path: /home/jenkins/.ssh/authorized_keys
-    manage_dir: False
-
-- name: Add user "jenkins" to sudo
-  lineinfile:
-    path: /etc/sudoers.d/jenkins
-    line: 'jenkins ALL=(ALL) NOPASSWD: ALL'
-    state: present
-    mode: 0440
-    create: yes
-    validate: 'visudo -cf %s'
-
-- name: Replace a line in sshd_config
-  ansible.builtin.lineinfile:
-    path: /etc/ssh/sshd_config
-    regexp: '^PasswordAuthentication yes'
-    line: 'PasswordAuthentication no'
-    state: present
-
-- name: restart sshd
-  systemd:
-    name: sshd
-    state: restarted
-
-#- name: download agent.jar
-#  get_url:
-#    url: http://{{ groups['ci'][0] }}:8080/jnlpJars/agent.jar
-#    dest: /home/devops
+- name: download agent.jar
+  get_url:
+    url: http://{{ groups['ci'][0] }}:8080/jnlpJars/agent.jar
+    dest: /home/jenkins
 
 #- name: run agent on the host
-#  shell: java -jar /home/devops/agent.jar -jnlpUrl http://{{ groups['ci'][0] }}:8080/computer/agent{{ groups['ciagents'].index(inventory_hostname)+1 }}/jenkins-agent.jnlp &
+#  shell: java -jar /home/jenkins/agent.jar -jnlpUrl http://{{ groups['ci'][0] }}:8080/computer/agent{{ groups['ciagents'].index(inventory_hostname)+1 }}/jenkins-agent.jnlp &
 

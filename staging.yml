@@ -1,6 +1,6 @@
 ---
 
-- hosts: prod
+- hosts: stage
   remote_user: devops
   become: yes
   become_method: sudo
@@ -10,4 +10,3 @@
   roles: 
     - common
     - docker
-    - prod

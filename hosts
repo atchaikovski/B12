@@ -1,8 +1,8 @@
 [prod]
-prod ansible_ssh_host=192.168.0.37
+production ansible_ssh_host=192.168.0.37
 
 [stage]
-stage ansible_ssh_host=192.168.0.38
+staging ansible_ssh_host=192.168.0.38
 
 [ci]
 jenkins ansible_ssh_host=192.168.0.31
