@@ -53,15 +53,7 @@
     group: jenkins
     mode: 0700
 
-- name: deploy authorized_keys
-  authorized_key: 
-    user: devops
-    state: present
-    key: "{{ lookup('file', '~/.ssh/id_rsa.pub') }}"
-    path: /home/devops/.ssh/authorized_keys
-    manage_dir: False
-
-- name: deploy Jenkins pub keys
+- name: deploy Jenkins pub key
   authorized_key: 
     user: jenkins
     state: present
