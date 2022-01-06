@@ -5,6 +5,6 @@
   remote_user: jenkins
   register: docker_command
 
-- name: what is output of 'docker ps'
-  ansible.builtin.debug:
-    msg: "{{ docker_command.stdout }}"
+#- name: what is output of 'docker ps'
+#  ansible.builtin.debug:
+#    msg: "{{ docker_command.stdout }}"

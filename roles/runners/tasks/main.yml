@@ -12,6 +12,7 @@
     url: http://{{ groups['ci'][0] }}:8080/jnlpJars/agent.jar
     dest: /home/jenkins
 
+
 #- name: run agent on the host
 #  shell: java -jar /home/jenkins/agent.jar -jnlpUrl http://{{ groups['ci'][0] }}:8080/computer/agent{{ groups['ciagents'].index(inventory_hostname)+1 }}/jenkins-agent.jnlp &
 

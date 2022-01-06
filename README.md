@@ -5,6 +5,9 @@ This homework is for SkillsFactory B12.
 ### What is this repository for? ###
 
 * Deploying Jenkins and 2 agents, then 2 VMs (prod and stage). Jenkins should have access to all VMs
+* Jenkins currently starts without setup, admin user gets created auto
+* plugins get copied and installed auto
+* -- need to connect 2 agents automatically, still not working
 * all things preferrably should have been installed automatically by ansible or similar
 * making some jobs to show that Jenkins is fully functional and capable
 * Version 0.2
