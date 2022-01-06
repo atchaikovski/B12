@@ -1,0 +1,17 @@
+[prod]
+prod ansible_ssh_host=192.168.0.37
+
+[stage]
+stage ansible_ssh_host=192.168.0.38
+
+[ci]
+jenkins ansible_ssh_host=192.168.0.31
+
+[ciagents]
+jenkins-agent1 ansible_ssh_host=192.168.0.34
+jenkins-agent2 ansible_ssh_host=192.168.0.35
+
+[all:vars]
+ansible_user=devops
+ansible_become=true
+ansible_ssh_common_args='-o StrictHostKeyChecking=no'

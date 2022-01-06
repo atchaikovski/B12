@@ -1,0 +1,120 @@
+---
+
+- name: Add the user 'jenkins' with a bash shell
+  ansible.builtin.user:
+    name: jenkins
+    shell: /bin/bash
+    groups: wheel
+    append: yes
+
+- name: Add user "jenkins" to sudo
+  lineinfile:
+    path: /etc/sudoers.d/jenkins
+    line: 'jenkins ALL=(ALL) NOPASSWD: ALL'
+    state: present
+    mode: 0440
+    create: yes
+    validate: 'visudo -cf %s'
+
+- name: create .ssh directory
+  file: 
+    path: /home/jenkins/.ssh
+    state: directory
+    owner: jenkins
+    group: jenkins
+    mode: 0700
+
+- name: Copy private key (jenkins master)
+  template:
+    src: ~/.ssh/id_rsa
+    dest: /home/jenkins/.ssh/id_rsa
+    owner: jenkins
+    group: jenkins
+    mode: 0600
+
+- name: Copy plugins.txt
+  template:
+    src: ../../templates/plugins.txt.j2
+    dest: /tmp/plugins.txt
+    owner: jenkins
+    group: jenkins
+    mode: 0644
+    backup: true
+
+- name: download jenkins.repo
+  get_url:
+    url: http://pkg.jenkins-ci.org/redhat-stable/jenkins.repo
+    dest: /etc/yum.repos.d/jenkins.repo
+
+- name: import jenkins key
+  rpm_key:
+    state: present
+    key: https://jenkins-ci.org/redhat/jenkins-ci.org.key
+
+- name: import another key 
+  rpm_key:
+    state: present
+    key: https://pkg.jenkins.io/redhat-stable/jenkins.io.key
+
+# -------------- Jenkins actually ------------------
+- name: install jenkins
+  yum:
+    name: jenkins
+    state: present
+
+- name: Enable service jenkins
+  ansible.builtin.service:
+    name: jenkins
+    enabled: yes
+      
+- name: create tmp directory
+  file: 
+    path: /var/lib/jenkins/tmp
+    state: directory
+    owner: jenkins
+    group: jenkins
+    mode: 0755
+
+- name: Copy Jenkins autoconfig file to {{ JENKINS_HOME }}
+  template:
+    src: ../../templates/jenkins.yaml.j2
+    dest: /var/lib/jenkins/jenkins.yaml
+    owner: jenkins
+    group: jenkins
+    mode: 0644
+
+- name: Enable Jenkins-CI auto-config
+  lineinfile:
+    dest: /etc/sysconfig/jenkins
+    regexp: ".*-Djava.awt.headless=true.*"
+    line: 'JENKINS_JAVA_OPTIONS="-Djenkins.install.runSetupWizard=false -Djava.awt.headless=true -Djava.net.preferIPv4Stack=true -Djava.io.tmpdir={{ JENKINS_HOME }}/tmp/ -Dorg.apache.commons.jelly.tags.fmt.timeZone=Europe/Moscow -Duser.timezone=Europe/Moscow"'
+
+- name: change Jenkins-CI JAVA_ARGS
+  lineinfile:
+    dest: /etc/sysconfig/jenkins
+    regexp: ^JAVA_ARGS=
+    line: 'JAVA_ARGS="-Dpermissive-script-security.enabled=true"'
+  notify: Restart Jenkins
+  tags:
+    - jenkins-conf
+
+- name: start jenkins
+  systemd:
+    name: jenkins
+    state: started
+
+- name: sleep for 10 seconds and continue with play
+  pause:
+    seconds: 10
+
+- name: Get the plugins manager
+  shell: curl -L -X GET "https://github.com/jenkinsci/plugin-installation-manager-tool/releases/download/2.11.1/jenkins-plugin-manager-2.11.1.jar" \
+              -o jenkins-plugin-manager.jar
+
+- name: install plugins
+  shell: java -jar jenkins-plugin-manager.jar -w /usr/lib/jenkins/jenkins.war -d /var/lib/jenkins/plugins -f /tmp/plugins.txt
+
+- name: remove jenkins-plugin-manager
+  file: 
+    path: /home/devops/jenkins-plugin-manager.jar
+    state: absent

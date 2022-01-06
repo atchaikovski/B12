@@ -1,0 +1,102 @@
+jenkins:
+  systemMessage: "Jenkins configured automatically by Jenkins Configuration as Code plugin\n\n"
+  agentProtocols:
+  - "JNLP4-connect"
+  - "Ping"
+  crumbIssuer:
+    standard:
+      excludeClientIPFromCrumb: false
+  disableRememberMe: false
+  numExecutors: 0
+  securityRealm:
+    local:
+      allowsSignup: false
+      users:
+        ## change to Vault later
+       - id: admin
+         password: {{ JENKINS_ADMIN_PASSWORD }}
+       - id: {{ JENKINS_DEV_ID }}
+         password: {{ JENKINS_DEV_PASSWORD }}
+  authorizationStrategy:
+    globalMatrix:
+      permissions:
+        - "Overall/Administer:admin"
+        - "Overall/Read:authenticated"
+        - "Job/Build:dev"
+        - "Job/Cancel:dev"
+        - "Job/Read:dev"
+        - "Job/Workspace:dev"
+        - "Run/Replay:dev"
+        - "Run/Update:dev"
+  remotingSecurity:
+    enabled: true
+
+  slaveAgentPort: 50000
+
+  views:
+  - all:
+      name: "all"  
+security:
+  queueItemAuthenticator:
+    authenticators:
+    - global:
+        strategy: triggeringUsersAuthorizationStrategy
+tool:
+  git:
+    installations:
+    - home: "git"
+      name: "Default"
+
+credentials:
+  system:
+    domainCredentials:
+      - credentials:
+          # User Auth
+          - usernamePassword:
+              scope: "GLOBAL"
+              id: "github-user"
+              description: "Github User Credentials"
+              username: "${secrets/github-user}"
+              password: "${secrets/github-password}"
+          # Tokens
+          - string:
+              scope: "GLOBAL"
+              id: "slack-token"
+              description: "Slack Access Token"
+              secret: "${secrets/slack-token}"
+          - string:
+              scope: "GLOBAL"
+              id: "github-token"
+              description: "Github User Token"
+              secret: "${secrets/github-token}"
+          # SSH Keys
+          - basicSSHUserPrivateKey:
+              scope: "GLOBAL"
+              id: "deploy-key"
+              username: "devops"
+              passphrase: ""
+              description: "Deploy key"
+              privateKeySource:
+                directEntry:
+                  privateKey: "${secrets/deploy-key}"
+          - basicSSHUserPrivateKey:
+              scope: "GLOBAL"
+              id: "ssh-agent-access-key"
+              username: "jenkins"
+              passphrase: ""
+              description: "SSH key to access agents"
+              privateKeySource:
+                directEntry:
+                  privateKey: "${secrets/ssh-agent-access-key}"
+
+unclassified:
+  location:
+    adminAddress: alex@tchaikovski.net
+    url: http://{{ groups['ci'][0] }}:8080/
+
+  githubpluginconfig:
+    configs:
+    - name: "Github"
+      credentialsId: "github-token"
+      apiURL: "https://api.github.com"
+      manageHooks: true
