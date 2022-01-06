@@ -12,7 +12,7 @@
     line: "{{ hostvars[item]['ansible_ssh_host'] }}\t{{ hostvars[item]['ansible_hostname']}}\t{{ hostvars[item]['ansible_hostname']}}"
     state: present
     backup: yes
-  with_items: "{{ ansible_play_batch }}"       
+  with_items: "{{ ansible_play_hosts_all }}"       
 
 - name: remove firewalld
   package:
@@ -65,7 +65,7 @@
   authorized_key: 
     user: jenkins
     state: present
-    key: "{{ lookup('file', '../secrets/jenkins_id_rsa.pub') }}"
+    key: "{{ lookup('file', '../../secrets/jenkins_id_rsa.pub') }}"
     path: /home/jenkins/.ssh/authorized_keys
     manage_dir: False
 
