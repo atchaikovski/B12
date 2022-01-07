@@ -74,6 +74,21 @@
   tags:
     - jenkins-conf
 
+- name: Get the plugins manager
+  shell: curl -L -X GET "https://github.com/jenkinsci/plugin-installation-manager-tool/releases/download/2.11.1/jenkins-plugin-manager-2.11.1.jar" \
+              -o jenkins-plugin-manager.jar
+
+- name: install plugins
+  shell: |
+    cd /home/devops
+    java -jar jenkins-plugin-manager.jar -w /usr/lib/jenkins/jenkins.war -d {{ JENKINS_HOME }}/plugins -f /tmp/plugins.txt
+    chown -R jenkins:jenkins {{ JENKINS_HOME }}/plugins
+
+- name: remove jenkins-plugin-manager
+  file: 
+    path: /home/devops/jenkins-plugin-manager.jar
+    state: absent
+
 - name: start jenkins
   systemd:
     name: jenkins
@@ -83,14 +98,3 @@
   pause:
     seconds: 10
 
-- name: Get the plugins manager
-  shell: curl -L -X GET "https://github.com/jenkinsci/plugin-installation-manager-tool/releases/download/2.11.1/jenkins-plugin-manager-2.11.1.jar" \
-              -o jenkins-plugin-manager.jar
-
-- name: install plugins
-  shell: java -jar jenkins-plugin-manager.jar -w /usr/lib/jenkins/jenkins.war -d /var/lib/jenkins/plugins -f /tmp/plugins.txt
-
-- name: remove jenkins-plugin-manager
-  file: 
-    path: /home/devops/jenkins-plugin-manager.jar
-    state: absent

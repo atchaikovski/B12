@@ -1,8 +1,8 @@
 
 JENKINS_HOME: /var/lib/jenkins
-CASC_JENKINS_CONFIG: /var/lib/jenkins/jenkins.yaml
-SECRETS: /var/lib/jenkins/secrets
-PLUGIN_DIR: /var/lib/jenkins/plugins
+CASC_JENKINS_CONFIG: $JENKINS_HOME/jenkins.yaml
+SECRETS: $JENKINS_HOME/secrets
+PLUGIN_DIR: $JENKINS_HOME/plugins
 JENKINS_ADMIN_PASSWORD: P@sw0rd1
 JENKINS_DEV_ID: dev
 JENKINS_DEV_PASSWORD: P@sw0rd1

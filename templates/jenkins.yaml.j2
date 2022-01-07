@@ -3,6 +3,31 @@ jenkins:
   agentProtocols:
   - "JNLP4-connect"
   - "Ping"
+  nodes:
+  - permanent:
+      labelString: "linux java"
+      launcher:
+        ssh:
+          credentialsId: "ssh-agent-access-key"
+          host: "{{ groups['ciagents'][0]['ansible_ssh_host'] }}"
+          port: 22
+          sshHostKeyVerificationStrategy: "nonVerifyingKeyVerificationStrategy"
+      mode: EXCLUSIVE
+      name: "agent1"
+      remoteFS: "/home/jenkins"
+      retentionStrategy: "always"
+  - permanent:
+      labelString: "linux java"
+      launcher:
+        ssh:
+          credentialsId: "ssh-agent-access-key"
+          host: "{{ groups['ciagents'][1]['ansible_ssh_host'] }}"
+          port: 22
+          sshHostKeyVerificationStrategy: "nonVerifyingKeyVerificationStrategy"
+      mode: EXCLUSIVE
+      name: "agent2"
+      remoteFS: "/home/jenkins"
+      retentionStrategy: "always"
   crumbIssuer:
     standard:
       excludeClientIPFromCrumb: false
@@ -12,7 +37,7 @@ jenkins:
     local:
       allowsSignup: false
       users:
-        ## change to Vault later
+        ## change to Vault later ##
        - id: admin
          password: {{ JENKINS_ADMIN_PASSWORD }}
        - id: {{ JENKINS_DEV_ID }}
@@ -30,9 +55,7 @@ jenkins:
         - "Run/Update:dev"
   remotingSecurity:
     enabled: true
-
   slaveAgentPort: 50000
-
   views:
   - all:
       name: "all"  
