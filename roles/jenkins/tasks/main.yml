@@ -1,5 +1,10 @@
 ---
 
+- name: "Build hosts file"
+  lineinfile: dest=/etc/hosts regexp='.*{{ item }}$' line="{{ hostvars[item]['ansible_ssh_host'] }} {{item}}" state=present
+  when: hostvars[item]['ansible_ssh_host'] is defined
+  with_items: groups['all']
+
 - name: Copy private key 
   template:
     src: ../../secrets/ssh-agent-access-key
