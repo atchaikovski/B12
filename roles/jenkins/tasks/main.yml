@@ -5,14 +5,6 @@
   when: hostvars[item]['ansible_ssh_host'] is defined
   with_items: groups['all']
 
-- name: Copy private key 
-  template:
-    src: ../../secrets/ssh-agent-access-key
-    dest: /home/jenkins/.ssh/id_rsa
-    owner: jenkins
-    group: jenkins
-    mode: 0600
-
 - name: Copy plugins.txt
   template:
     src: ../../templates/plugins.txt.j2
@@ -59,10 +51,33 @@
 - name: Copy Jenkins autoconfig file to {{ JENKINS_HOME }}
   template:
     src: ../../templates/jenkins.yaml.j2
-    dest: /var/lib/jenkins/jenkins.yaml
+    dest: "{{ JENKINS_HOME }}/jenkins.yaml"
     owner: jenkins
     group: jenkins
     mode: 0644
+
+- name: Copy private key 
+  template:
+    src: ../../secrets/ssh-agent-access-key
+    dest: /home/jenkins/.ssh/id_rsa
+    owner: jenkins
+    group: jenkins
+    mode: 0600
+
+- name: Copy agents ssh key 
+  template:
+    src: ../../secrets/ssh-agent-access-key
+    dest: "{{ JENKINS_SECRETS }}/ssh-agent-access-key"
+    owner: jenkins
+    group: jenkins
+    mode: 0600
+- name: Copy agents ssh key 
+  template:
+    src: ../../secrets/deploy-key
+    dest: "{{ JENKINS_SECRETS }}/deploy-key"
+    owner: jenkins
+    group: jenkins
+    mode: 0600
 
 - name: Enable Jenkins-CI auto-config
   lineinfile:
