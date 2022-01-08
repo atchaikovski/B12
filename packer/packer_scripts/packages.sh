@@ -1,12 +1,14 @@
 #!/bin/bash
 
 # fix locale
+echo "==> fixing locale when enter from MacOS"
 cat <<EOF >/etc/environment
 LANG=en_US.utf-8
 LC_ALL=en_US.utf-8
 EOF
 
 # Disable IPv6
+echo "==> disabling ipv6"
 echo 'net.ipv6.conf.all.disable_ipv6 = 1' >> /etc/sysctl.conf
 echo 'net.ipv6.conf.default.disable_ipv6 = 1' >> /etc/sysctl.conf
 

@@ -9,7 +9,7 @@ jenkins:
       launcher:
         ssh:
           credentialsId: "ssh-agent-access-key"
-          host: "{{ groups['ciagents'][0]['ansible_ssh_host'] }}"
+          host: "{{ hostvars[groups['ciagents'][0]]['ansible_ssh_host'] }}"
           port: 22
           sshHostKeyVerificationStrategy: "nonVerifyingKeyVerificationStrategy"
       mode: EXCLUSIVE
@@ -21,7 +21,7 @@ jenkins:
       launcher:
         ssh:
           credentialsId: "ssh-agent-access-key"
-          host: "{{ groups['ciagents'][1]['ansible_ssh_host'] }}"
+          host: "{{ hostvars[groups['ciagents'][1]]['ansible_ssh_host'] }}"
           port: 22
           sshHostKeyVerificationStrategy: "nonVerifyingKeyVerificationStrategy"
       mode: EXCLUSIVE

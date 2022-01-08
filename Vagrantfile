@@ -14,7 +14,7 @@ Vagrant.configure(2) do |config|
     vsphere.resource_pool_name = ''
     vsphere.vm_base_path = 'cicd'
     vsphere.customization_spec_name = 'centos7'
-    vsphere.template_name = 'templates/c7-20211228155737'
+    vsphere.template_name = 'templates/c7-20220108070809'
     vsphere.user = 'Administrator@alex.local'
     vsphere.password = 'P@sw0rd1'
     vsphere.insecure = true
