@@ -74,24 +74,17 @@ credentials:
   system:
     domainCredentials:
       - credentials:
-          # User Auth
-          - usernamePassword:
-              scope: "GLOBAL"
-              id: "github-user"
-              description: "Github User Credentials"
-              username: "${secrets/github-user}"
-              password: "${secrets/github-password}"
           # Tokens
           - string:
               scope: "GLOBAL"
               id: "slack-token"
               description: "Slack Access Token"
-              secret: "${secrets/slack-token}"
+              secret: "{{JENKINS_SECRETS}}/slack-token"
           - string:
               scope: "GLOBAL"
               id: "github-token"
-              description: "Github User Token"
-              secret: "${secrets/github-token}"
+              description: "Github Token"
+              secret: "{{JENKINS_SECRETS}}/github-token"
           # SSH Keys
           - basicSSHUserPrivateKey:
               scope: "GLOBAL"
@@ -101,7 +94,7 @@ credentials:
               description: "Deploy key"
               privateKeySource:
                 directEntry:
-                  privateKey: "${secrets/deploy-key}"
+                  privateKey: "{readFile:{{JENKINS_SECRETS}}/deploy-key}"
           - basicSSHUserPrivateKey:
               scope: "GLOBAL"
               id: "ssh-agent-access-key"
@@ -110,7 +103,7 @@ credentials:
               description: "SSH key to access agents"
               privateKeySource:
                 directEntry:
-                  privateKey: "${secrets/ssh-agent-access-key}"
+                  privateKey: "${readFile:{{JENKINS_SECRETS}}/ssh-agent-access-key}"
 
 unclassified:
   location:
@@ -123,3 +116,8 @@ unclassified:
       credentialsId: "github-token"
       apiURL: "https://api.github.com"
       manageHooks: true
+
+  slackNotifier:
+    teamDomain: "Alex's Workspace"
+    baseUrl: "https://atchaikovski.slack.com/services/hooks/jenkins-ci/"
+    tokenCredentialId: "slack-token"

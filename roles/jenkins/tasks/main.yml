@@ -56,29 +56,6 @@
     group: jenkins
     mode: 0644
 
-- name: Copy private key 
-  template:
-    src: ../../secrets/ssh-agent-access-key
-    dest: /home/jenkins/.ssh/id_rsa
-    owner: jenkins
-    group: jenkins
-    mode: 0600
-
-- name: Copy agents ssh key 
-  template:
-    src: ../../secrets/ssh-agent-access-key
-    dest: "{{ JENKINS_SECRETS }}/ssh-agent-access-key"
-    owner: jenkins
-    group: jenkins
-    mode: 0600
-- name: Copy agents ssh key 
-  template:
-    src: ../../secrets/deploy-key
-    dest: "{{ JENKINS_SECRETS }}/deploy-key"
-    owner: jenkins
-    group: jenkins
-    mode: 0600
-
 - name: Enable Jenkins-CI auto-config
   lineinfile:
     dest: /etc/sysconfig/jenkins
@@ -109,6 +86,14 @@
     path: /home/devops/jenkins-plugin-manager.jar
     state: absent
 
+- name: create secrets directory
+  file: 
+    path: /var/lib/jenkins/secrets
+    state: directory
+    owner: jenkins
+    group: jenkins
+    mode: 0700
+
 - name: start jenkins
   systemd:
     name: jenkins
@@ -118,3 +103,42 @@
   pause:
     seconds: 10
 
+- name: Copy private key 
+  template:
+    src: ../../secrets/ssh-agent-access-key
+    dest: /home/jenkins/.ssh/id_rsa
+    owner: jenkins
+    group: jenkins
+    mode: 0600
+
+- name: Copy github token
+  template:
+    src: ../../secrets/github-token
+    dest: "{{ JENKINS_SECRETS }}/github-token"
+    owner: jenkins
+    group: jenkins
+    mode: 0644
+
+- name: Copy slack token
+  template:
+    src: ../../secrets/slack-token
+    dest: "{{ JENKINS_SECRETS }}/slack-token"
+    owner: jenkins
+    group: jenkins
+    mode: 0644
+
+- name: Copy agents ssh key 
+  template:
+    src: ../../secrets/ssh-agent-access-key
+    dest: "{{ JENKINS_SECRETS }}/ssh-agent-access-key"
+    owner: jenkins
+    group: jenkins
+    mode: 0644
+    
+- name: Copy agents ssh key 
+  template:
+    src: ../../secrets/deploy-key
+    dest: "{{ JENKINS_SECRETS }}/deploy-key"
+    owner: jenkins
+    group: jenkins
+    mode: 0644
