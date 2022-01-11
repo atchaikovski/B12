@@ -135,6 +135,23 @@
     group: jenkins
     mode: 0644
     
+- name: Copy vault role id 
+  template:
+    src: ../../secrets/vault-role-id
+    dest: "{{ JENKINS_SECRETS }}/vault-role-id"
+    owner: jenkins
+    group: jenkins
+    mode: 0644
+
+- name: Copy vault secret id 
+  template:
+    src: ../../secrets/vault-secret-id
+    dest: "{{ JENKINS_SECRETS }}/vault-secret-id"
+    owner: jenkins
+    group: jenkins
+    mode: 0644
+
+
 - name: Copy agents ssh key 
   template:
     src: ../../secrets/deploy-key
