@@ -11,7 +11,7 @@ pipeline {
         buildDiscarder(logRotator(numToKeepStr: '20'))
         disableConcurrentBuilds()
     }
-    stages{   
+    stages {   
       stage('Vault') {
         steps {
           withVault([configuration: configuration, vaultSecrets: secrets]) {
@@ -19,12 +19,13 @@ pipeline {
           }
         }  
       }
-      stage('Slack'){
-        steps {
-            slackSend botUser: true, channel: 'pet-projects', color: '#00ff00', 
-                 message: 'Testing Jekins with Slack', 
-                 tokenCredentialId: 'slack-token'
-        }  
-      }
     }
+  post {
+      failure {
+         slackSend channel: 'pet-projects', message: 'Failure of vault test', teamDomain: 'alexsworkspac-nf14913', tokenCredentialId: 'slack-token'
+      }
+      success {
+         slackSend channel: 'pet-projects', message: 'Success of vault test', teamDomain: 'alexsworkspac-nf14913', tokenCredentialId: 'slack-token'
+      }
+  }
 }

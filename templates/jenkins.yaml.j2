@@ -17,7 +17,7 @@ jenkins:
       remoteFS: "/home/jenkins"
       retentionStrategy: "always"
   - permanent:
-      labelString: "linux java"
+      labelString: "linux java docker"
       launcher:
         ssh:
           credentialsId: "ssh-agent-access-key"
@@ -40,19 +40,11 @@ jenkins:
         ## change to Vault later ##
        - id: admin
          password: {{ JENKINS_ADMIN_PASSWORD }}
-       - id: {{ JENKINS_DEV_ID }}
-         password: {{ JENKINS_DEV_PASSWORD }}
   authorizationStrategy:
     globalMatrix:
       permissions:
         - "Overall/Administer:admin"
         - "Overall/Read:authenticated"
-        - "Job/Build:dev"
-        - "Job/Cancel:dev"
-        - "Job/Read:dev"
-        - "Job/Workspace:dev"
-        - "Run/Replay:dev"
-        - "Run/Update:dev"
   remotingSecurity:
     enabled: true
   slaveAgentPort: 50000
@@ -125,8 +117,10 @@ unclassified:
       manageHooks: true
 
   slackNotifier:
-    teamDomain: "Alex's Workspace"
-    baseUrl: "https://atchaikovski.slack.com/services/hooks/jenkins-ci/"
+    botUser: false
+    sendAsText: false
+    slackUserIdResolver: "no"
+    teamDomain: "alexsworkspac-nf14913"
     tokenCredentialId: "slack-token"
 
   hashicorpVault:

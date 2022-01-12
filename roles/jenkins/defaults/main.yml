@@ -3,5 +3,3 @@ JENKINS_HOME: /var/lib/jenkins
 CASC_JENKINS_CONFIG: /var/lib/jenkins/jenkins.yaml
 JENKINS_SECRETS: /var/lib/jenkins/secrets
 JENKINS_ADMIN_PASSWORD: P@sw0rd1
-JENKINS_DEV_ID: dev
-JENKINS_DEV_PASSWORD: P@sw0rd1
