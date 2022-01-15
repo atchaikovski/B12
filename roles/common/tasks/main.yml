@@ -28,6 +28,7 @@
   yum:
     name: java-11-openjdk-devel
     state: present
+    lock_timeout: 120
 
 - name: Ensure group "docker" exists
   ansible.builtin.group:
