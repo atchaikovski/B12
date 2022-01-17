@@ -3,3 +3,4 @@ JENKINS_HOME: /var/lib/jenkins
 CASC_JENKINS_CONFIG: /var/lib/jenkins/jenkins.yaml
 JENKINS_SECRETS: /var/lib/jenkins/secrets
 JENKINS_ADMIN_PASSWORD: P@sw0rd1
+VAULT_SERVER: "192.168.0.49"
