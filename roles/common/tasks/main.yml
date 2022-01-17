@@ -9,15 +9,6 @@
 #  lineinfile: dest=/etc/hosts regexp='.*{{ item }}$' line="{{ hostvars[item]['ansible_ssh_host'] }} {{item}}" state=present
 #  when: hostvars[item]['ansible_ssh_host'] is defined
 #  with_items: groups['all']
-
-- name: update hosts
-  lineinfile:
-    path: "/etc/hosts"
-    regexp: ".*\t{{ hostvars[item]['ansible_hostname']}}\t{{ hostvars[item]['ansible_hostname']}}"
-    line: "{{ hostvars[item]['ansible_ssh_host'] }}\t{{ hostvars[item]['ansible_hostname']}}\t{{ hostvars[item]['ansible_hostname']}}"
-    state: present
-    backup: yes
-  with_items: "{{ ansible_play_batch }}"
   
 - name: remove firewalld
   package:
@@ -77,3 +68,12 @@
   systemd:
     name: sshd
     state: restarted
+
+- name: update hosts
+  lineinfile:
+    path: "/etc/hosts"
+    regexp: ".*\t{{ hostvars[item]['ansible_hostname']}}\t{{ hostvars[item]['ansible_hostname']}}"
+    line: "{{ hostvars[item]['ansible_ssh_host'] }}\t{{ hostvars[item]['ansible_hostname']}}\t{{ hostvars[item]['ansible_hostname']}}"
+    state: present
+    backup: yes
+  with_items: "{{ ansible_play_hosts_all }}"
