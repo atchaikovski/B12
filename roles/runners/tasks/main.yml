@@ -1,11 +1,11 @@
 ---
 
-- name: Wait for jenkins master
-  wait_for:
-    host: "{{ groups['ci'][0] }}"
-    port: 443
-    sleep: 10     # check every 10 sec
-    timeout: 300  # exit after 300 sec
+# - name: Wait for jenkins master
+#   wait_for:
+#     host: "{{ groups['ci'][0] }}"
+#     port: 443
+#     sleep: 10    
+#     timeout: 300 
 
 #- name: download agent.jar
 #  get_url:
